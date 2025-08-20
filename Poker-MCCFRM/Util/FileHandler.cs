@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.Json;
 
 namespace Poker_MCCFRM
 {
@@ -85,15 +86,13 @@ namespace Poker_MCCFRM
                 return null;
             }
         }
+        // Replace the LoadFromFileIndexSerialized method with a version using System.Text.Json
         public static int[] LoadFromFileIndexSerialized(string filename)
         {
             try
             {
                 using var fileStream2 = File.OpenRead(filename);
-                var binForm = new BinaryFormatter();
-                int[] data = (int[])binForm.Deserialize(fileStream2);
-
-                return data;
+                return JsonSerializer.Deserialize<int[]>(fileStream2);
             }
             catch
             {

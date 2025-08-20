@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace SnapCall
 {
     using Poker_MCCFRM;
+    using System.Text.Json;
     public class Evaluator
 	{
         private bool loaded = false;
@@ -79,15 +80,13 @@ namespace SnapCall
 		public void SaveToFile(string fileName)
 		{
             using var fileStream = File.Create(fileName);
-            BinaryFormatter bf = new BinaryFormatter();
-            bf.Serialize(fileStream, handRankMap);
+            JsonSerializer.Serialize(fileStream, handRankMap);
         }
 
 		private void LoadFromFile(string fileName)
 		{
             using var fileStream = File.OpenRead(fileName);
-            var binForm = new BinaryFormatter();
-            handRankMap = (HashMap)binForm.Deserialize(fileStream);
+            handRankMap = JsonSerializer.Deserialize<HashMap>(fileStream);
         }
 
 		private void GenerateFiveCardTable()

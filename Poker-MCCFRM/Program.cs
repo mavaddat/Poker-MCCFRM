@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using SnapCall;
@@ -266,13 +266,11 @@ namespace Poker_MCCFRM
                 return;
             }
         }
+        // Replace SerializeToBytes<T> and Deserialize(byte[]) with System.Text.Json-based methods
+
         private static byte[] SerializeToBytes<T>(T item)
         {
-            var formatter = new BinaryFormatter();
-            using var stream = new MemoryStream();
-            formatter.Serialize(stream, item);
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream.ToArray();
+            return JsonSerializer.SerializeToUtf8Bytes(item);
         }
         private static Infoset Deserialize(this byte[] byteArray)
         {
@@ -280,12 +278,7 @@ namespace Poker_MCCFRM
             {
                 return null;
             }
-            using var memStream = new MemoryStream();
-            var binForm = new BinaryFormatter();
-            memStream.Write(byteArray, 0, byteArray.Length);
-            memStream.Seek(0, SeekOrigin.Begin);
-            Infoset obj = (Infoset)binForm.Deserialize(memStream);
-            return obj;
+            return JsonSerializer.Deserialize<Infoset>(byteArray);
         }
     }
 }

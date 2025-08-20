@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Poker_MCCFRM
 {
@@ -292,12 +293,15 @@ namespace Poker_MCCFRM
             Console.WriteLine("Generating River histograms completed in {0}d {1}h {2}m {3}s", elapsed.Days,
                 elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
         }
+        // Replace the usage of BinaryFormatter for serialization and deserialization with System.Text.Json for int[] arrays.
+
         public static void SaveToFile()
         {
             if (preflopIndices != null)
             {
                 Console.WriteLine("Saving table to file {0}", filenameOppClusters);
-                FileHandler.SaveToFile(preflopIndices, filenameOppClusters);
+                // Use JSON serialization for int[]
+                File.WriteAllText(filenameOppClusters, JsonSerializer.Serialize(preflopIndices));
             }
             if (histogramsRiver != null)
             {
@@ -320,16 +324,16 @@ namespace Poker_MCCFRM
             if (riverIndices != null)
             {
                 Console.WriteLine("Saving river cluster index to file {0}", filenameRiverClusters);
-                using var fileStream = File.Create(filenameRiverClusters);
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(fileStream, riverIndices);
+                // Use JSON serialization for int[]
+                File.WriteAllText(filenameRiverClusters, JsonSerializer.Serialize(riverIndices));
             }
         }
         private static void LoadFromFile()
         {
             if (File.Exists(filenameRiverClusters))
             {
-                riverIndices = FileHandler.LoadFromFileIndex(filenameRiverClusters);
+                // Use JSON deserialization for int[]
+                riverIndices = JsonSerializer.Deserialize<int[]>(File.ReadAllText(filenameRiverClusters));
             }
             else
             {
@@ -356,9 +360,8 @@ namespace Poker_MCCFRM
                 if (File.Exists(filenameOppClusters))
                 {
                     Console.WriteLine("Loading flop opponent clusters from file {0}", filenameOppClusters);
-                    using var fileStream = File.OpenRead(filenameOppClusters);
-                    var binForm = new BinaryFormatter();
-                    preflopIndices = (int[])binForm.Deserialize(fileStream);
+                    // Use JSON deserialization for int[]
+                    preflopIndices = JsonSerializer.Deserialize<int[]>(File.ReadAllText(filenameOppClusters));
                 }
             }
         }

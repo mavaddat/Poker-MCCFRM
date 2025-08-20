@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -333,21 +334,21 @@ namespace Poker_MCCFRM
             TimeSpan elapsed = DateTime.UtcNow - start;
             Console.WriteLine("Histogram generation completed in {0}", elapsed.TotalSeconds);
         }
+        // Replace SaveToFile and LoadFromFile methods with the following:
+
         public static void SaveToFile()
         {
             if (EHSFlop != null)
             {
                 Console.WriteLine("Saving 5 Card EHS to file {0}", EHSTable5Cards);
-                using var fileStream = File.Create(EHSTable5Cards);
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(fileStream, EHSFlop);
+                var options = new JsonSerializerOptions { WriteIndented = false };
+                File.WriteAllText(EHSTable5Cards, JsonSerializer.Serialize(EHSFlop, options));
             }
             if (EHSTurn != null)
             {
                 Console.WriteLine("Saving 6 Card EHS to file {0}", EHSTable6Cards);
-                using var fileStream = File.Create(EHSTable6Cards);
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(fileStream, EHSTurn);
+                var options = new JsonSerializerOptions { WriteIndented = false };
+                File.WriteAllText(EHSTable6Cards, JsonSerializer.Serialize(EHSTurn, options));
             }
         }
         private static void LoadFromFile()
@@ -355,16 +356,12 @@ namespace Poker_MCCFRM
             if (File.Exists(EHSTable5Cards))
             {
                 Console.WriteLine("Loading 5 Card EHS Table {0}", EHSTable5Cards);
-                using var fileStream = File.OpenRead(EHSTable5Cards);
-                var binForm = new BinaryFormatter();
-                EHSFlop = (float[])binForm.Deserialize(fileStream);
+                EHSFlop = JsonSerializer.Deserialize<float[]>(File.ReadAllText(EHSTable5Cards));
             }
             if (File.Exists(EHSTable6Cards))
             {
                 Console.WriteLine("Loading 6 Card EHS Table {0}", EHSTable6Cards);
-                using var fileStream = File.OpenRead(EHSTable6Cards);
-                var binForm = new BinaryFormatter();
-                EHSTurn = (float[])binForm.Deserialize(fileStream);
+                EHSTurn = JsonSerializer.Deserialize<float[]>(File.ReadAllText(EHSTable6Cards));
             }
         }
     }
