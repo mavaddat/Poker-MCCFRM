@@ -49,8 +49,8 @@ namespace Poker_MCCFRM
         public static HandIndexer indexer_2_5_2;
         public static Evaluator handEvaluator;
 
-        public static ConcurrentDictionary<string, Infoset> nodeMap = new ConcurrentDictionary<string, Infoset>(Global.NOF_THREADS, 1000000);
-        public static ConcurrentDictionary<string, Infoset> nodeMapBaseline = new ConcurrentDictionary<string, Infoset>(Global.NOF_THREADS, 1000000);
+        public static ConcurrentDictionary<string, Infoset> nodeMap = new ConcurrentDictionary<string, Infoset>(NOF_THREADS, 1000000);
+        public static ConcurrentDictionary<string, Infoset> nodeMapBaseline = new ConcurrentDictionary<string, Infoset>(NOF_THREADS, 1000000);
 
         public static ThreadLocal<Deck> Deck = new ThreadLocal<Deck>(() => new Deck());
     }
