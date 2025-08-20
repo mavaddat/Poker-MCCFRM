@@ -7,7 +7,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace SnapCall
 {
     using Poker_MCCFRM;
+    using System.Numerics;
     using System.Text.Json;
+
     public class Evaluator
 	{
         private bool loaded = false;
@@ -77,14 +79,14 @@ namespace SnapCall
 			return (int)handRankMap[bitmap];
 		}
 
-		public void SaveToFile(string fileName)
-		{
+        public void SaveToFile(string fileName)
+        {
             using var fileStream = File.Create(fileName);
             JsonSerializer.Serialize(fileStream, handRankMap);
         }
 
-		private void LoadFromFile(string fileName)
-		{
+        private void LoadFromFile(string fileName)
+        {
             using var fileStream = File.OpenRead(fileName);
             handRankMap = JsonSerializer.Deserialize<HashMap>(fileStream);
         }
@@ -104,7 +106,16 @@ namespace SnapCall
                 {
                     handBitmaps.Add(values.Aggregate(0ul, (acc, el) => acc | (1ul << el)));
                     sharedLoopCounter++;
-                    progress.Report((double)sharedLoopCounter/ combinations.Count, sharedLoopCounter);
+                    // Check if combinations.Count is larger than Double.MaxValue
+                    if(combinations.Count > (BigInteger)Double.MaxValue)
+                    {
+                        throw new Exception("The number of combinations exceeds the maximum value for a double. Please use a different method to report progress.");
+                    }
+                    // Replace all instances of:
+                    // progress.Report((double)sharedLoopCounter/ combinations.Count, sharedLoopCounter);
+                    // with:
+                    progress.Report((double)sharedLoopCounter / (double)combinations.Count, sharedLoopCounter);
+                    progress.Report((double)sharedLoopCounter/ (double)combinations.Count, sharedLoopCounter);
                 }
             }
 
@@ -184,7 +195,12 @@ namespace SnapCall
                 handRankMap[bitmap] = subsetValues.Max();
 
                 sharedLoopCounter++;
-                progress.Report((double)sharedLoopCounter / combinations.Count, sharedLoopCounter);
+                // Check if combinations.Count is larger than Double.MaxValue
+                if (combinations.Count > (BigInteger)Double.MaxValue)
+                {
+                    throw new Exception("The number of combinations exceeds the maximum value for a double. Please use a different method to report progress.");
+                }
+                progress.Report((double)sharedLoopCounter / (double)combinations.Count, sharedLoopCounter);
             }
         }
 
@@ -208,7 +224,12 @@ namespace SnapCall
                 handRankMap[bitmap] = subsetValues.Max();
 
                 sharedLoopCounter++;
-                progress.Report((double)sharedLoopCounter / combinations.Count, sharedLoopCounter);
+                // Check if combinations.Count is larger than Double.MaxValue
+                if (combinations.Count > (BigInteger)Double.MaxValue)
+                {
+                    throw new Exception("The number of combinations exceeds the maximum value for a double. Please use a different method to report progress.");
+                }
+                progress.Report((double)sharedLoopCounter / (double)combinations.Count, sharedLoopCounter);
             }
         }
 
